@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title or app_name }}</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-light">
+    <div id="wrapper" class="d-flex">
+        <!-- Sidebar -->
+        {% if current_user.is_authenticated %}
+        <nav id="sidebar" class="bg-primary text-white p-3 vh-100 position-sticky top-0 shadow-sm d-flex flex-column">
+            <h4 class="mb-4 text-center mt-2 fw-bold text-white"><i class="fa-solid fa-hospital me-2"></i>MedCore HMS</h4>
+            <ul class="nav flex-column mb-auto">
+                {% if current_user.role == 'admin' %}
+                <li class="nav-item mb-2">
+                    <a href="{{ url_for('admin_bp.dashboard') }}" class="nav-link text-white sidebar-link rounded {% if request.endpoint == 'admin_bp.dashboard' %}active{% endif %}">
+                        <i class="fa-solid fa-chart-line me-2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ url_for('admin_bp.manage_users') }}" class="nav-link text-white sidebar-link rounded {% if request.endpoint == 'admin_bp.manage_users' %}active{% endif %}">
+                        <i class="fa-solid fa-users-gear me-2"></i> Manage Users
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if current_user.role == 'doctor' %}
+                <li class="nav-item mb-2">
+                    <a href="{{ url_for('doctor_bp.dashboard') }}" class="nav-link text-white sidebar-link rounded {% if request.endpoint == 'doctor_bp.dashboard' %}active{% endif %}">
+                        <i class="fa-solid fa-user-md me-2"></i> Doctor Dashboard
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if current_user.role == 'receptionist' %}
+                <li class="nav-item mb-2">
+                    <a href="{{ url_for('receptionist_bp.dashboard') }}" class="nav-link text-white sidebar-link rounded {% if request.endpoint == 'receptionist_bp.dashboard' %}active{% endif %}">
+                        <i class="fa-solid fa-desktop me-2"></i> Receptionist
+                    </a>
+                </li>
+                {% endif %}
+
+                <!-- Shared Menus (Can be restricted in routes) -->
+                {% if current_user.role in ['admin', 'doctor', 'receptionist'] %}
+                <li class="nav-item mb-2">
+                    <a href="{{ url_for('patient_bp.list_patients') }}" class="nav-link text-white sidebar-link rounded {% if 'patient_bp' in request.endpoint %}active{% endif %}">
+                        <i class="fa-solid fa-bed-pulse me-2"></i> Patients
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a href="{{ url_for('appointment_bp.list_appointments') }}" class="nav-link text-white sidebar-link rounded {% if 'appointment_bp' in request.endpoint %}active{% endif %}">
+                        <i class="fa-regular fa-calendar-check me-2"></i> Appointments
+                    </a>
+                </li>
+                {% endif %}
+
+                {% if current_user.role in ['admin', 'receptionist'] %}
+                <li class="nav-item mb-2">
+                    <a href="{{ url_for('billing_bp.list_bills') }}" class="nav-link text-white sidebar-link rounded {% if 'billing_bp' in request.endpoint %}active{% endif %}">
+                        <i class="fa-solid fa-file-invoice-dollar me-2"></i> Billing
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            
+            <hr class="mt-auto">
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle px-2 py-1" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://ui-avatars.com/api/?name={{ current_user.username }}&background=EBF4FF&color=1e40af" alt="" width="32" height="32" class="rounded-circle me-2">
+                    <strong>{{ current_user.username }}</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                    <li><a class="dropdown-item" href="{{ url_for('auth_bp.profile') }}">Profile</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="{{ url_for('auth_bp.logout') }}">Sign out</a></li>
+                </ul>
+            </div>
+        </nav>
+        {% endif %}
+
+        <!-- Page Content -->
+        <main class="w-100 flex-grow-1 p-4" style="min-height: 100vh;">
+            <!-- Flash Messages -->
+            <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        {% set bs_cat = 'primary' if category == 'message' else category %}
+                        {% set bg_cat = 'text-bg-' ~ bs_cat %}
+                        <div class="toast align-items-center {{ bg_cat }} border-0 mb-2 shadow show" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <i class="fa-solid fa-circle-info me-2"></i> {{ message }}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

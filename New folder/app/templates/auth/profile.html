@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <h2 class="fw-bold text-dark"><i class="fa-solid fa-user-circle text-primary me-2"></i>My Profile</h2>
+    <p class="text-muted">Update your account settings and credentials</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card p-4 border-0 shadow-sm align-items-center text-center">
+            <img src="https://ui-avatars.com/api/?name={{ current_user.username }}&background=EBF4FF&color=1e40af" alt="{{ current_user.username }}" width="120" height="120" class="rounded-circle mb-3 shadow">
+            <h5 class="fw-bold mb-1">{{ current_user.username }}</h5>
+            <p class="text-muted mb-3"><span class="badge bg-primary text-uppercase">{{ current_user.role }}</span></p>
+            <p class="small text-muted mb-0">Member since {{ current_user.created_at.strftime('%Y') }}</p>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card p-4 shadow-sm border-0">
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        {{ form.username.label(class="form-label fw-semibold") }}
+                        {{ form.username(class="form-control bg-light") }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        {{ form.email.label(class="form-label fw-semibold") }}
+                        {{ form.email(class="form-control bg-light") }}
+                    </div>
+                    
+                    <div class="col-12 mb-4">
+                        {{ form.password.label(class="form-label fw-semibold text-danger") }}
+                        {{ form.password(class="form-control bg-light", placeholder="Leave blank to keep current password") }}
+                    </div>
+
+                    <div class="col-12 text-end pt-3 border-top">
+                        {{ form.submit(class="btn btn-primary px-4 shadow-sm") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

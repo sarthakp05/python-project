@@ -1,0 +1,103 @@
+/* Custom professional theme for Hospital Management System */
+:root {
+    --primary-color: #0d6efd;
+    --primary-dark: #0a58ca;
+    --bg-light: #f8f9fa;
+    --text-dark: #212529;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f7f6 !important;
+}
+
+/* Sidebar Styling */
+#sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary-color) 100%) !important;
+    transition: all 0.3s;
+}
+
+.sidebar-link {
+    transition: background-color 0.2s, color 0.2s;
+    font-weight: 500;
+    opacity: 0.85;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    opacity: 1;
+}
+
+.sidebar-link.active {
+    background-color: rgba(255, 255, 255, 0.25);
+    font-weight: 600;
+    opacity: 1;
+}
+
+/* Dashboard Cards */
+.card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 1.5rem;
+}
+
+/* Form Styles */
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    padding: 0.6rem 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.btn {
+    border-radius: 8px;
+    padding: 0.5rem 1.2rem;
+    font-weight: 500;
+}
+
+/* Auth Page specific */
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f4f7f6 0%, #e9ecef 100%);
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    overflow: hidden;
+}
+
+.auth-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+
+.toast {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}

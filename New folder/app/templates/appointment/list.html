@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark"><i class="fa-regular fa-calendar-check text-primary me-2"></i>Appointments</h2>
+    {% if current_user.role in ['admin', 'receptionist'] %}
+    <a href="{{ url_for('appointment_bp.book_appointment') }}" class="btn btn-primary shadow-sm"><i class="fa-solid fa-plus me-1"></i> Book Appointment</a>
+    {% endif %}
+</div>
+
+<div class="card p-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle datatable">
+            <thead class="table-light">
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td>
+                        <div class="fw-bold">{{ appt.appointment_date.strftime('%b %d, %Y') }}</div>
+                        <div class="text-muted small">{{ appt.appointment_time.strftime('%I:%M %p') }}</div>
+                    </td>
+                    <td class="fw-semibold">{{ appt.patient.first_name }} {{ appt.patient.last_name }}</td>
+                    <td>Dr. {{ appt.doctor.user.username }}</td>
+                    <td>
+                        <span class="badge rounded-pill bg-{% if appt.status == 'scheduled' %}primary{% elif appt.status == 'completed' %}success{% elif appt.status == 'cancelled' %}danger{% else %}secondary{% endif %} bg-opacity-10 text-{% if appt.status == 'scheduled' %}primary{% elif appt.status == 'completed' %}success{% elif appt.status == 'cancelled' %}danger{% else %}secondary{% endif %} border border-{% if appt.status == 'scheduled' %}primary{% elif appt.status == 'completed' %}success{% elif appt.status == 'cancelled' %}danger{% else %}secondary{% endif %} border-opacity-25 px-2 py-1">
+                            {{ appt.status.capitalize() }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Manage
+                            </button>
+                            <ul class="dropdown-menu shadow">
+                                {% if appt.status != 'completed' %}
+                                <li><a class="dropdown-item text-success" href="{{ url_for('appointment_bp.update_status', id=appt.id, status='completed') }}"><i class="fa-solid fa-check me-2"></i> Mark Completed</a></li>
+                                <li><a class="dropdown-item text-danger" href="{{ url_for('appointment_bp.update_status', id=appt.id, status='cancelled') }}"><i class="fa-solid fa-xmark me-2"></i> Cancel</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('appointment_bp.update_status', id=appt.id, status='no-show') }}"><i class="fa-solid fa-user-xmark me-2"></i> No Show</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                {% endif %}
+                                <li><a class="dropdown-item text-primary" href="{{ url_for('billing_bp.generate_bill', appointment_id=appt.id) }}"><i class="fa-solid fa-file-invoice-dollar me-2"></i> Generate Bill</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        $('.datatable').DataTable({
+            order: [[0, 'desc']],
+            pageLength: 10,
+            language: { search: "", searchPlaceholder: "Search appointments..." }
+        });
+    });
+</script>
+{% endblock %}

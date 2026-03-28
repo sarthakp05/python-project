@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark"><i class="fa-solid fa-bed-pulse text-primary me-2"></i>Patients List</h2>
+    {% if current_filter %}
+    <span class="badge bg-secondary ms-3">Filtered by Blood: {{ current_filter }} <a href="{{ url_for('patient_bp.list_patients') }}" class="text-white text-decoration-none ms-1"><i class="fa-solid fa-xmark"></i></a></span>
+    {% endif %}
+    {% if current_user.role in ['admin', 'receptionist'] %}
+    <a href="{{ url_for('patient_bp.add_patient') }}" class="btn btn-primary shadow-sm ms-auto"><i class="fa-solid fa-plus me-1"></i> Add Patient</a>
+    {% endif %}
+</div>
+
+<div class="card p-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle datatable">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Phone</th>
+                    <th>Gender</th>
+                    <th>Blood Group</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td class="text-muted fw-semibold">PT-{{ "%04d" | format(patient.id) }}</td>
+                    <td class="fw-bold text-dark">{{ patient.first_name }} {{ patient.last_name }}</td>
+                    <td>{{ patient.phone or 'N/A' }}</td>
+                    <td>{{ patient.gender or 'N/A' }}</td>
+                    <td><a href="{{ url_for('patient_bp.list_patients', blood_group=patient.blood_group) }}" class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 text-decoration-none">{{ patient.blood_group or 'N/A' }}</a></td>
+                    <td>
+                        <a href="{{ url_for('patient_bp.view_patient', id=patient.id) }}" class="btn btn-sm btn-outline-primary"><i class="fa-regular fa-eye"></i> View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        $('.datatable').DataTable({
+            pageLength: 10,
+            language: { search: "", searchPlaceholder: "Search records..." }
+        });
+    });
+</script>
+{% endblock %}

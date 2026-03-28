@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-dark"><i class="fa-solid fa-desktop text-primary me-2"></i>Receptionist Dashboard</h2>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card p-4 d-flex flex-row align-items-center justify-content-between text-white bg-primary bg-gradient rounded-4 shadow-sm h-100">
+            <div>
+                <h5 class="fw-bold">Book Walk-in</h5>
+                <p class="mb-0 text-white-50">Schedule a new appointment quickly</p>
+            </div>
+            <a href="{{ url_for('appointment_bp.book_appointment') }}" class="btn btn-light rounded-circle p-3 text-primary shadow">
+                <i class="fa-solid fa-plus fs-4"></i>
+            </a>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-4 d-flex flex-row align-items-center justify-content-between text-white bg-success bg-gradient rounded-4 shadow-sm h-100">
+            <div>
+                <h5 class="fw-bold">New Patient</h5>
+                <p class="mb-0 text-white-50">Register a new patient into the system</p>
+            </div>
+            <a href="{{ url_for('patient_bp.add_patient') }}" class="btn btn-light rounded-circle p-3 text-success shadow">
+                <i class="fa-solid fa-user-plus fs-4"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="card p-4">
+    <h5 class="fw-bold mb-4">Today's Appointments View</h5>
+    <div class="table-responsive">
+        <table class="table table-hover datatable align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Time</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td class="fw-semibold">{{ appt.appointment_time.strftime('%I:%M %p') }}</td>
+                    <td>{{ appt.patient.first_name }} {{ appt.patient.last_name }}</td>
+                    <td>Dr. {{ appt.doctor.user.username }}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ appt.status.capitalize() }}
+                            </button>
+                            <ul class="dropdown-menu shadow-sm">
+                                <li><a class="dropdown-item" href="{{ url_for('appointment_bp.update_status', id=appt.id, status='completed') }}">Completed</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('appointment_bp.update_status', id=appt.id, status='cancelled') }}">Cancelled</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('appointment_bp.update_status', id=appt.id, status='no-show') }}">No Show</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('billing_bp.generate_bill', appointment_id=appt.id) }}" class="btn btn-sm btn-info text-white">
+                            <i class="fa-solid fa-file-invoice"></i> Bill
+                        </a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center py-4">No appointments found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

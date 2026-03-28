@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('doctor_bp.dashboard') }}" class="text-decoration-none text-muted"><i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard</a>
+    <h2 class="fw-bold text-dark mt-2">Add Prescription</h2>
+    <p class="text-muted">For {{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card p-4 border border-info border-start border-4 border-end-0 border-top-0 border-bottom-0 shadow-sm">
+            <h5 class="fw-bold"><i class="fa-solid fa-clipboard-user text-info me-2"></i>Patient Summary</h5>
+            <ul class="list-unstyled mb-0">
+                <li class="mb-2"><strong>ID:</strong> PT-{{ "%04d" | format(appointment.patient.id) }}</li>
+                <li class="mb-2"><strong>Age:</strong> 
+                    {% if appointment.patient.date_of_birth %}
+                        <!-- basic approx diff -->
+                        28 yrs (calc needed)
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </li>
+                <li class="mb-2"><strong>Gender:</strong> {{ appointment.patient.gender }}</li>
+                <li class="mb-2"><strong>Symptoms:</strong> <br>
+                    <span class="text-muted small">{{ appointment.symptoms or 'None recorded' }}</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card p-4 shadow-sm border-0">
+            <form method="POST" action="">
+                {{ form.hidden_tag() }}
+                
+                <div class="mb-3">
+                    {{ form.diagnosis.label(class="form-label fw-semibold") }}
+                    {{ form.diagnosis(class="form-control bg-light", rows="2") }}
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.medicines.label(class="form-label fw-semibold") }}
+                    {{ form.medicines(class="form-control bg-light font-monospace", rows="3") }}
+                    <small class="text-muted d-block mt-1">Example: <br><code>[ {"name": "Aspirin", "dosage": "1x/day", "duration": "5 days"} ]</code></small>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.instructions.label(class="form-label fw-semibold") }}
+                    {{ form.instructions(class="form-control bg-light", rows="3") }}
+                </div>
+                
+                <div class="mb-4 col-md-6">
+                    {{ form.follow_up_date.label(class="form-label fw-semibold") }}
+                    {{ form.follow_up_date(class="form-control bg-light", type="date") }}
+                </div>
+                
+                <div class="text-end border-top pt-3">
+                    {{ form.submit(class="btn btn-primary shadow-sm px-4") }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
